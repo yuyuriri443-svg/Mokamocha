@@ -1,0 +1,13 @@
+{
+  "name": "mokamocha",
+  "private": true,
+  "scripts": {
+    "build": "next build"
+  },
+  "dependencies": {
+    "next": "14.0.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "@supabase/ssr": "^0.5.0"
+  }
+}
