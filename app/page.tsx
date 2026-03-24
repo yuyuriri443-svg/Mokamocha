@@ -32,21 +32,51 @@ export default function HomePage() {
   return (
     <div style={{ backgroundColor: '#FDFCF0', minHeight: '100vh', fontFamily: '"Inter", sans-serif' }}>
       
-      {/* 1. NAVBAR NÂNG CẤP */}
-      <nav style={{ 
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-        padding: '15px 5%', background: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
-        position: 'sticky', top: 0, zIndex: 100
-      }}>
-        <div style={{ fontWeight: '800', fontSize: '1.5rem', color: '#2C3E50', letterSpacing: '1px' }}>MOKAMOCHA</div>
-        
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          {/* Icon Tin nhắn */}
-          <div style={{ position: 'relative', cursor: 'pointer' }}>
-            <span style={{ fontSize: '1.4rem' }}>💬</span>
-            <span style={badgeStyle}>1</span>
-          </div>
+      // Thêm vào phần khai báo state ở đầu HomePage
+const [user, setUser] = useState<any>(null)
+const [showUserMenu, setShowUserMenu] = useState(false)
 
+useEffect(() => {
+  // Kiểm tra user hiện tại
+  supabase.auth.getUser().then(({ data: { user } }) => {
+    setUser(user)
+  })
+}, [])
+
+// Trong phần Return của Navbar, thay chỗ cụm nút Đăng nhập bằng:
+<div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+  {/* ... (Các icon Chuông, Chat giữ nguyên) ... */}
+
+  {user ? (
+    <div style={{ position: 'relative' }}>
+      <div 
+        onClick={() => setShowUserMenu(!showUserMenu)}
+        style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#B08968', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontWeight: 'bold' }}
+      >
+        {user.email?.charAt(0).toUpperCase()}
+      </div>
+      
+      {showUserMenu && (
+        <div style={dropdownStyle}>
+          <p style={{ fontSize: '0.8rem', color: '#888', margin: '0 0 10px 0' }}>{user.email}</p>
+          <div style={menuItemStyle} onClick={() => alert('Trang Edit Profile sắp ra mắt!')}>⚙️ Chỉnh sửa hồ sơ</div>
+          <div style={{ ...menuItemStyle, color: '#FF4D4D' }} onClick={() => { supabase.auth.signOut(); window.location.reload(); }}>🚪 Đăng xuất</div>
+        </div>
+      )}
+    </div>
+  ) : (
+    <div style={{ display: 'flex', gap: '10px' }}>
+      <Link href="/login"><button style={btnSecondStyle}>Đăng nhập</button></Link>
+    </div>
+  )}
+</div>
+
+// CSS bổ sung
+const dropdownStyle: React.CSSProperties = {
+  position: 'absolute', top: '50px', right: '0', width: '180px', background: '#fff',
+  boxShadow: '0 5px 20px rgba(0,0,0,0.1)', borderRadius: '10px', padding: '15px', zIndex: 1000
+}
+const menuItemStyle = { padding: '10px 0', cursor: 'pointer', fontSize: '0.9rem', borderTop: '1px solid #f5f5f5' }
           {/* Icon Chuông Thông báo */}
           <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setShowNoti(!showNoti)}>
             <span style={{ fontSize: '1.4rem' }}>🔔</span>
