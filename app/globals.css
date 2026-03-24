@@ -1,19 +1,16 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-:root {
-  --foreground-rgb: 74, 63, 53; /* #4A3F35 */
-  --background-rgb: 245, 239, 230; /* #F5EFE6 */
-}
-
 body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
-  -webkit-font-smoothing: antialiased;
+  color: #4A3F35;
+  background-color: #F5EFE6;
+  margin: 0;
+  padding: 0;
+  font-family: serif;
 }
 
-/* Custom Scrollbar cho phong cách Vintage */
+h1, h2, h3 {
+  color: #4A3F35;
+}
+
+/* Giữ lại cái scrollbar đẹp của bạn */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -23,12 +20,4 @@ body {
 ::-webkit-scrollbar-thumb {
   background: #B08968;
   border-radius: 10px;
-}
-
-.font-playfair {
-  font-family: var(--font-playfair), serif;
-}
-
-.font-garamond {
-  font-family: var(--font-cormorant), serif;
 }
