@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
-import { useRouter } from 'next/navigation' // Fix lỗi router
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -9,7 +8,6 @@ const supabase = createClient(
 )
 
 export default function AdminDashboard() {
-  const router = useRouter()
   const [books, setBooks] = useState<any[]>([])
   const [comments, setComments] = useState<any[]>([])
   const [notiText, setNotiText] = useState('')
@@ -17,17 +15,8 @@ export default function AdminDashboard() {
     title: '', author: '', cover_url: '', file_url: '', review: '', tags: '' 
   })
 
-  // 1. Kiểm tra quyền Admin khi vừa vào trang
+  // Chỉ lấy dữ liệu, không check quyền nữa
   useEffect(() => {
-    const checkAdmin = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      // THAY EMAIL CỦA BẠN VÀO ĐÂY
-      if (!user || user.email !== 'yuyuriri443@gmail.com') {
-        alert('Bạn không có quyền truy cập !')
-        router.push('/')
-      }
-    }
-    checkAdmin()
     fetchData()
   }, [])
 
@@ -67,9 +56,10 @@ export default function AdminDashboard() {
 
   return (
     <div style={{ padding: '40px', backgroundColor: '#FDFCF0', minHeight: '100vh', fontFamily: 'sans-serif' }}>
-      <h1 style={{ textAlign: 'center', color: '#2C3E50' }}>Quản trị Mokamocha ☕</h1>
+      <h1 style={{ textAlign: 'center', color: '#2C3E50', marginBottom: '10px' }}>Quản trị Mokamocha ☕</h1>
+      <p style={{ textAlign: 'center', color: '#888', marginBottom: '30px' }}>Chế độ tự do - Không cần đăng nhập Admin</p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', marginTop: '40px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
         
         {/* CỘT 1: THÊM SÁCH & THÔNG BÁO */}
         <div>
