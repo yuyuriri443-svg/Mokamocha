@@ -26,17 +26,18 @@ export default function HomePage() {
   ]
 
   return (
-    <div className="space-y-12 animate-in fade-in duration-700">
-      {/* Hero Section */}
-      <section className="text-center space-y-4 py-10">
-        <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#4A3F35]">
-          Chào mừng tới Mokamocha
-        </h2>
-        <p className="italic text-lg text-[#B08968] font-garamond">
-          "Sách là tách cà phê cho tâm hồn giữa buổi chiều lặng lẽ."
-        </p>
-      </section>
-
+  <div className="space-y-12 transition-opacity duration-700"> 
+    {/* Bỏ animate-in và fade-in tạm thời để tránh lỗi build nếu chưa cài plugin */}
+    
+    {/* Hero Section */}
+    <section className="text-center space-y-4 py-10">
+      <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#4A3F35]">
+        Chào mừng tới Mokamocha
+      </h2>
+      <p className="italic text-lg text-[#B08968]">
+        "Sách là tách cà phê cho tâm hồn giữa buổi chiều lặng lẽ."
+      </p>
+    </section>
       {/* Main Actions Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {sections.map((item) => (
