@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
@@ -10,6 +10,7 @@ const supabase = createClient(
 
 export default function BookDetail() {
   const { id } = useParams()
+  const router = useRouter()
   const [book, setBook] = useState<any>(null)
 
   useEffect(() => {
@@ -17,26 +18,53 @@ export default function BookDetail() {
       const { data } = await supabase.from('books').select('*').eq('id', id).single()
       if (data) setBook(data)
     }
-    fetchBook()
+    if (id) fetchBook()
   }, [id])
 
-  if (!book) return <div className="p-10 text-center">Đang lật giở từng trang...</div>
+  if (!book) return <div className="min-h-screen bg-[#F5EFE6] flex items-center justify-center italic text-[#4A3F35]">Đang chuẩn bị trà và sách...</div>
 
   return (
-    <div style={{ backgroundColor: '#F5EFE6', minHeight: '100vh', padding: '40px', color: '#4A3F35', fontFamily: 'serif' }}>
-      <button onClick={() => window.history.back()} style={{ marginBottom: '20px', cursor: 'pointer', background: 'none', border: '1px solid #B08968', padding: '5px 15px' }}>← Quay lại</button>
-      
-      <div style={{ display: 'flex', gap: '40px', maxWidth: '900px', margin: '0 auto', flexWrap: 'wrap' }}>
-        <img src={book.cover_url} alt={book.title} style={{ width: '300px', borderRadius: '8px', boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }} />
+    <div className="min-h-screen bg-[#F5EFE6] text-[#4A3F35] font-serif p-6 md:p-12">
+      <div className="max-w-5xl mx-auto">
+        <button 
+          onClick={() => router.back()} 
+          className="mb-10 text-[#B08968] hover:translate-x-[-5px] transition-transform flex items-center gap-2 font-bold"
+        >
+          ← Quay lại kệ sách
+        </button>
         
-        <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>{book.title}</h1>
-          <p style={{ fontSize: '1.2rem', color: '#B08968', marginBottom: '20px' }}>Tác giả: {book.author}</p>
-          <div style={{ lineHeight: '1.6', fontSize: '1.1rem', marginBottom: '30px' }}>{book.description || "Chưa có mô tả cho cuốn sách này."}</div>
+        <div className="grid md:grid-cols-[350px_1fr] gap-12 items-start bg-white/50 p-8 rounded-lg shadow-inner border border-[#E8DFD0]">
+          <div className="shadow-2xl">
+            <img 
+              src={book.cover_url} 
+              alt={book.title} 
+              className="w-full h-auto rounded-sm border-4 border-white" 
+            />
+          </div>
           
-          <div style={{ display: 'flex', gap: '15px' }}>
-            <a href={book.epub_url} style={{ padding: '12px 25px', backgroundColor: '#4A3F35', color: '#F5EFE6', textDecoration: 'none', borderRadius: '5px' }}>Tải file EPUB</a>
-            <button style={{ padding: '12px 25px', border: '1px solid #4A3F35', background: 'none', color: '#4A3F35', cursor: 'pointer', borderRadius: '5px' }}>Đọc Online (Sắp có)</button>
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-4xl md:text-5xl font-bold mb-2">{book.title}</h1>
+              <p className="text-xl italic text-[#B08968]">Tác giả: {book.author}</p>
+            </div>
+            
+            <div className="h-px bg-[#B08968]/20 w-full"></div>
+            
+            <div className="text-lg leading-relaxed text-justify opacity-90">
+              {book.description || "Cuốn sách này hiện chưa có lời tựa, nhưng chắc chắn là một hành trình thú vị đang chờ bạn khám phá."}
+            </div>
+
+            <div className="pt-6 flex flex-wrap gap-4">
+              <a 
+                href={book.epub_url} 
+                className="bg-[#4A3F35] text-[#F5EFE6] px-8 py-3 rounded-sm hover:bg-[#2D2620] transition-colors shadow-lg font-bold"
+              >
+                Tải file EPUB
+              </a>
+              <button className="border border-[#4A3F35] px-8 py-3 rounded-sm hover:bg-[#4A3F35] hover:text-white transition-all font-bold opacity-50 cursor-not-allowed">
+                Đọc Online (Sắp ra mắt)
+              </button>
+            </div>
           </div>
         </div>
       </div>
