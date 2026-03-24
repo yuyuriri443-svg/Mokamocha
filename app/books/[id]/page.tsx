@@ -23,7 +23,7 @@ export default function BookDetail() {
   }, [id])
 
   if (!book) return (
-    <div style={{ backgroundColor: '#F5EFE6', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Lora', serif", fontStyle: 'italic' }}>
+    <div style={{ backgroundColor: '#F5EFE6', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "serif", fontStyle: 'italic' }}>
       Đang chuẩn bị trà và lật giở từng trang...
     </div>
   )
@@ -31,7 +31,7 @@ export default function BookDetail() {
   const styles = {
     container: { backgroundColor: '#F5EFE6', minHeight: '100vh', padding: '40px 20px', fontFamily: "'Lora', serif", color: '#4A3F35' },
     contentWrapper: { maxWidth: '1000px', margin: '0 auto' },
-    backBtn: { background: 'none', border: 'none', color: '#B08968', cursor: 'pointer', fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '8px' },
+    backBtn: { background: 'none', border: 'none', color: '#B08968', cursor: 'pointer', fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'inherit' },
     mainBox: { 
       display: 'grid', 
       gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
@@ -53,7 +53,6 @@ export default function BookDetail() {
     divider: { height: '1px', backgroundColor: '#E8DFD0', margin: '20px 0' },
     desc: { lineHeight: '1.8', fontSize: '1.1rem', textAlign: 'justify' as const, marginBottom: '40px', opacity: 0.9 },
     btnGroup: { display: 'flex', gap: '15px', flexWrap: 'wrap' as const },
-    // Nút Đọc Online 3D
     readBtn: { 
       backgroundColor: '#B08968', 
       color: 'white', 
@@ -63,9 +62,9 @@ export default function BookDetail() {
       fontWeight: 'bold', 
       fontSize: '1rem',
       boxShadow: '0 5px 0 #8E6D50',
-      transition: '0.1s'
+      display: 'inline-block',
+      transition: '0.1s transform, 0.1s box-shadow'
     },
-    // Nút Tải File
     downloadBtn: { 
       border: '2px solid #4A3F35', 
       color: '#4A3F35', 
@@ -73,12 +72,18 @@ export default function BookDetail() {
       borderRadius: '4px', 
       textDecoration: 'none', 
       fontWeight: 'bold',
-      fontSize: '1rem'
+      fontSize: '1rem',
+      display: 'inline-block'
     }
   }
 
   return (
     <div style={styles.container}>
+      {/* Thêm font thủ công vào đây để chắc chắn không lỗi font */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700&display=swap');
+      `}} />
+      
       <div style={styles.contentWrapper}>
         <button onClick={() => router.back()} style={styles.backBtn}>
           ← QUAY LẠI KỆ SÁCH
@@ -92,30 +97,31 @@ export default function BookDetail() {
           <div>
             <h1 style={styles.title}>{book.title}</h1>
             <p style={styles.author}>{book.author}</p>
-            
             <div style={styles.divider}></div>
-            
             <div style={styles.desc}>
               {book.description || "Cuốn sách này hiện chưa có lời tựa, nhưng chắc chắn là một hành trình thú vị đang chờ bạn khám phá tại Mokamocha."}
             </div>
 
             <div style={styles.btnGroup}>
-              <Link 
-                href={`/reader/${book.id}`} 
-                style={styles.readBtn}
-                onMouseDown={(e) => {
-                  e.currentTarget.style.transform = 'translateY(4px)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-                onMouseUp={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 5px 0 #8E6D50';
-                }}
-              >
-                ĐỌC ONLINE NGAY
+              <Link href={`/reader/${book.id}`} style={{ textDecoration: 'none' }}>
+                <span 
+                  style={styles.readBtn}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                  onMouseDown={(e) => {
+                    e.currentTarget.style.transform = 'translateY(4px)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                  onMouseUp={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 5px 0 #8E6D50';
+                  }}
+                >
+                  ĐỌC ONLINE NGAY
+                </span>
               </Link>
 
-              <a href={book.epub_url} style={styles.downloadBtn} target="_blank">
+              <a href={book.epub_url} style={styles.downloadBtn} target="_blank" rel="noreferrer">
                 TẢI FILE EPUB
               </a>
             </div>
