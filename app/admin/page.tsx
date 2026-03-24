@@ -1,3 +1,15 @@
+// Thêm đoạn này vào đầu AdminDashboard trong app/admin/page.tsx
+useEffect(() => {
+  const checkAdmin = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    // Thay 'email-cua-ban@gmail.com' bằng email thật của bạn
+    if (!user || user.email !== 'email-cua-ban@gmail.com') {
+      alert('Bạn không có quyền vào khu vực này!')
+      router.push('/')
+    }
+  }
+  checkAdmin()
+}, [])
 'use client'
 import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
