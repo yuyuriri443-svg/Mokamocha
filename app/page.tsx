@@ -21,46 +21,48 @@ export default function HomePage() {
     fetchBooks()
   }, [])
 
+  // Style chuẩn Vintage cho Tiệm sách
+  const styles = {
+    container: { backgroundColor: '#F5EFE6', minHeight: '100vh', padding: '40px 20px', fontFamily: 'serif', color: '#4A3F35' },
+    header: { textAlign: 'center' as const, marginBottom: '60px', borderBottom: '2px double #B08968', paddingBottom: '20px' },
+    grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '40px', maxWidth: '1200px', margin: '0 auto' },
+    card: { background: '#FFFBF5', padding: '20px', borderRadius: '4px', boxShadow: '5px 5px 15px rgba(0,0,0,0.05)', border: '1px solid #E8DFD0', textAlign: 'center' as const, transition: '0.3s' },
+    img: { width: '100%', height: '320px', objectFit: 'cover' as const, borderRadius: '2px', marginBottom: '15px', boxShadow: '2px 2px 10px rgba(0,0,0,0.1)' },
+    title: { fontSize: '1.2rem', fontWeight: 'bold', margin: '10px 0 5px 0', color: '#2D2620' },
+    author: { fontStyle: 'italic', opacity: 0.7, marginBottom: '20px' },
+    button: { display: 'inline-block', backgroundColor: '#4A3F35', color: '#F5EFE6', padding: '10px 20px', textDecoration: 'none', borderRadius: '2px', fontWeight: 'bold', fontSize: '0.9rem', border: 'none', cursor: 'pointer' }
+  }
+
   return (
-    <div className="min-h-screen bg-[#F5EFE6] text-[#4A3F35] font-serif p-8">
-      {/* Header phong cách Vintage */}
-      <header className="text-center py-12 border-b border-[#B08968]/30 mb-12">
-        <h1 className="text-6xl md:text-7xl font-bold tracking-tighter mb-2">Mokamocha ☕</h1>
-        <p className="text-xl italic opacity-70">Nơi những trang sách cũ tìm thấy tri kỷ mới</p>
+    <div style={styles.container}>
+      <header style={styles.header}>
+        <h1 style={{ fontSize: '4rem', margin: 0 }}>Mokamocha ☕</h1>
+        <p style={{ letterSpacing: '2px', opacity: 0.8 }}>TIỆM SÁCH CŨ TRỰC TUYẾN</p>
       </header>
 
-      <main className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold border-l-4 border-[#B08968] pl-4">Kệ sách mới về</h2>
-          <div className="text-sm opacity-60">Tổng cộng: {books.length} cuốn</div>
-        </div>
+      <main style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <h2 style={{ borderLeft: '5px solid #B08968', paddingLeft: '15px', marginBottom: '30px' }}>Kệ sách mới về ({books.length})</h2>
         
         {loading ? (
-          <div className="flex justify-center items-center h-64 italic">Đang pha cà phê và lật giở từng trang...</div>
+          <p style={{ textAlign: 'center', fontStyle: 'italic' }}>Đang xếp sách lên kệ...</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
+          <div style={styles.grid}>
             {books.map((book) => (
-              <Link href={`/books/${book.id}`} key={book.id} className="group">
-                <div className="bg-white p-4 rounded-sm shadow-sm transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-xl border border-[#E8DFD0]">
-                  <div className="overflow-hidden mb-4 relative aspect-[3/4]">
-                    <img 
-                      src={book.cover_url || 'https://via.placeholder.com/300x400'} 
-                      alt={book.title} 
-                      className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-500"
-                    />
-                  </div>
-                  <h3 className="text-lg font-bold leading-tight mb-1 group-hover:underline decoration-[#B08968]">{book.title}</h3>
-                  <p className="text-sm opacity-60 italic mb-3">{book.author}</p>
-                  <div className="text-xs uppercase tracking-widest text-[#B08968] font-bold">Xem chi tiết →</div>
-                </div>
-              </Link>
+              <div key={book.id} style={styles.card}>
+                <img src={book.cover_url || 'https://via.placeholder.com/250x350'} alt={book.title} style={styles.img} />
+                <h3 style={styles.title}>{book.title}</h3>
+                <p style={styles.author}>{book.author}</p>
+                <Link href={`/books/${book.id}`} style={styles.button}>
+                  XEM CHI TIẾT →
+                </Link>
+              </div>
             ))}
           </div>
         )}
       </main>
 
-      <footer className="text-center mt-20 py-8 text-sm opacity-40 border-t border-[#B08968]/10">
-        © 2026 Mokamocha - Chúc bạn một ngày đọc sách an yên.
+      <footer style={{ textAlign: 'center', marginTop: '100px', opacity: 0.5, fontSize: '0.8rem' }}>
+        © 2026 Mokamocha - Sách cũ, tâm hồn mới.
       </footer>
     </div>
   )
