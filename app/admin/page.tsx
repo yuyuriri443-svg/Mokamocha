@@ -3,7 +3,7 @@ useEffect(() => {
   const checkAdmin = async () => {
     const { data: { user } } = await supabase.auth.getUser()
     // Thay 'email-cua-ban@gmail.com' bằng email thật của bạn
-    if (!user || user.email !== 'email-cua-ban@gmail.com') {
+    if (!user || user.email !== 'yuyuriri443@gmail.com') {
       alert('Bạn không có quyền vào khu vực này!')
       router.push('/')
     }
