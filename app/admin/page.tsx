@@ -1,18 +1,7 @@
-// Thêm đoạn này vào đầu AdminDashboard trong app/admin/page.tsx
-useEffect(() => {
-  const checkAdmin = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    // Thay 'email-cua-ban@gmail.com' bằng email thật của bạn
-    if (!user || user.email !== 'yuyuriri443@gmail.com') {
-      alert('Bạn không có quyền vào khu vực này!')
-      router.push('/')
-    }
-  }
-  checkAdmin()
-}, [])
 'use client'
 import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
+import { useRouter } from 'next/navigation' // Fix lỗi router
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,12 +9,25 @@ const supabase = createClient(
 )
 
 export default function AdminDashboard() {
+  const router = useRouter()
   const [books, setBooks] = useState<any[]>([])
   const [comments, setComments] = useState<any[]>([])
   const [notiText, setNotiText] = useState('')
-  const [bookForm, setBookForm] = useState({ title: '', author: '', cover_url: '', file_url: '', review: '' })
+  const [bookForm, setBookForm] = useState({ 
+    title: '', author: '', cover_url: '', file_url: '', review: '', tags: '' 
+  })
 
+  // 1. Kiểm tra quyền Admin khi vừa vào trang
   useEffect(() => {
+    const checkAdmin = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      // THAY EMAIL CỦA BẠN VÀO ĐÂY
+      if (!user || user.email !== 'yuyuriri443@gmail.com') {
+        alert('Bạn không có quyền truy cập !')
+        router.push('/')
+      }
+    }
+    checkAdmin()
     fetchData()
   }, [])
 
@@ -36,19 +38,17 @@ export default function AdminDashboard() {
     if (c) setComments(c)
   }
 
-  // 1. Thêm sách mới
   const handleAddBook = async (e: any) => {
     e.preventDefault()
     const { error } = await supabase.from('books').insert([bookForm])
     if (error) alert(error.message)
     else {
       alert('Đã lên kệ sách mới! 📚')
-      setBookForm({ title: '', author: '', cover_url: '', file_url: '', review: '' })
+      setBookForm({ title: '', author: '', cover_url: '', file_url: '', review: '', tags: '' })
       fetchData()
     }
   }
 
-  // 2. Cập nhật thông báo mới
   const handleUpdateNoti = async () => {
     const { error } = await supabase.from('announcements').insert([{ content: notiText }])
     if (error) alert(error.message)
@@ -58,7 +58,6 @@ export default function AdminDashboard() {
     }
   }
 
-  // 3. Xóa bình luận khiếm nhã
   const deleteComment = async (id: string) => {
     if (confirm('Xóa bình luận này?')) {
       await supabase.from('comments').delete().eq('id', id)
@@ -81,7 +80,8 @@ export default function AdminDashboard() {
               <input placeholder="Tác giả" value={bookForm.author} onChange={e => setBookForm({...bookForm, author: e.target.value})} style={inputStyle} required />
               <input placeholder="Link ảnh bìa (URL)" value={bookForm.cover_url} onChange={e => setBookForm({...bookForm, cover_url: e.target.value})} style={inputStyle} required />
               <input placeholder="Link file EPUB (.epub)" value={bookForm.file_url} onChange={e => setBookForm({...bookForm, file_url: e.target.value})} style={inputStyle} />
-              <textarea placeholder="Review nội dung..." value={bookForm.review} onChange={e => setBookForm({...bookForm, review: e.target.value})} style={{...inputStyle, height: '100px'}} />
+              <input placeholder="Tags (Ví dụ: Kinh dị, Trinh thám)" value={bookForm.tags} onChange={e => setBookForm({...bookForm, tags: e.target.value})} style={inputStyle} />
+              <textarea placeholder="Review nội dung..." value={bookForm.review} onChange={e => setBookForm({...bookForm, review: e.target.value})} style={{...inputStyle, height: '80px'}} />
               <button type="submit" style={btnStyle}>Đăng sách</button>
             </form>
           </section>
@@ -98,9 +98,10 @@ export default function AdminDashboard() {
           <section style={sectionStyle}>
             <h3>💬 Quản lý bình luận</h3>
             <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+              {comments.length === 0 && <p style={{color: '#999'}}>Chưa có bình luận nào.</p>}
               {comments.map(c => (
                 <div key={c.id} style={itemStyle}>
-                  <p style={{ margin: 0, fontSize: '0.9rem' }}><strong>{c.user_email}:</strong> {c.content}</p>
+                  <p style={{ margin: 0, fontSize: '0.8rem' }}><strong>{c.user_email}:</strong> {c.content}</p>
                   <button onClick={() => deleteComment(c.id)} style={delBtnStyle}>Xóa</button>
                 </div>
               ))}
@@ -112,8 +113,8 @@ export default function AdminDashboard() {
             <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
               {books.map(b => (
                 <div key={b.id} style={itemStyle}>
-                  <span>{b.title}</span>
-                  <button onClick={async () => { await supabase.from('books').delete().eq('id', b.id); fetchData(); }} style={delBtnStyle}>Gỡ</button>
+                  <span style={{fontSize: '0.9rem'}}>{b.title}</span>
+                  <button onClick={async () => { if(confirm('Gỡ sách?')) { await supabase.from('books').delete().eq('id', b.id); fetchData(); } }} style={delBtnStyle}>Gỡ</button>
                 </div>
               ))}
             </div>
@@ -125,10 +126,9 @@ export default function AdminDashboard() {
   )
 }
 
-// CSS Inline
 const sectionStyle = { background: '#fff', padding: '25px', borderRadius: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }
-const formStyle = { display: 'flex', flexDirection: 'column' as const, gap: '12px' }
-const inputStyle = { padding: '12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.9rem' }
+const formStyle = { display: 'flex', flexDirection: 'column' as const, gap: '10px' }
+const inputStyle = { padding: '10px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.9rem' }
 const btnStyle = { padding: '12px', background: '#B08968', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' as const }
-const itemStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', borderBottom: '1px solid #eee' }
-const delBtnStyle = { background: '#fee2e2', color: '#ef4444', border: 'none', padding: '5px 10px', borderRadius: '5px', cursor: 'pointer', fontSize: '0.8rem' }
+const itemStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #eee' }
+const delBtnStyle = { background: '#fee2e2', color: '#ef4444', border: 'none', padding: '4px 8px', borderRadius: '5px', cursor: 'pointer', fontSize: '0.7rem' }
