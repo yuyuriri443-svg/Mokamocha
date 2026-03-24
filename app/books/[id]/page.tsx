@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
+import Link from 'next/link'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -21,49 +22,102 @@ export default function BookDetail() {
     if (id) fetchBook()
   }, [id])
 
-  if (!book) return <div className="min-h-screen bg-[#F5EFE6] flex items-center justify-center italic text-[#4A3F35]">Đang chuẩn bị trà và sách...</div>
+  if (!book) return (
+    <div style={{ backgroundColor: '#F5EFE6', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Lora', serif", fontStyle: 'italic' }}>
+      Đang chuẩn bị trà và lật giở từng trang...
+    </div>
+  )
+
+  const styles = {
+    container: { backgroundColor: '#F5EFE6', minHeight: '100vh', padding: '40px 20px', fontFamily: "'Lora', serif", color: '#4A3F35' },
+    contentWrapper: { maxWidth: '1000px', margin: '0 auto' },
+    backBtn: { background: 'none', border: 'none', color: '#B08968', cursor: 'pointer', fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '8px' },
+    mainBox: { 
+      display: 'grid', 
+      gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+      gap: '50px', 
+      backgroundColor: '#FFFBF5', 
+      padding: '40px', 
+      borderRadius: '8px', 
+      border: '1px solid #E8DFD0', 
+      boxShadow: '0 20px 40px rgba(0,0,0,0.05)' 
+    },
+    coverImg: { 
+      width: '100%', 
+      borderRadius: '4px', 
+      boxShadow: '10px 10px 30px rgba(0,0,0,0.15)', 
+      border: '5px solid white' 
+    },
+    title: { fontFamily: "'Playfair Display', serif", fontSize: '3rem', margin: '0 0 10px 0', lineHeight: '1.1' },
+    author: { fontSize: '1.4rem', fontStyle: 'italic', color: '#B08968', marginBottom: '25px' },
+    divider: { height: '1px', backgroundColor: '#E8DFD0', margin: '20px 0' },
+    desc: { lineHeight: '1.8', fontSize: '1.1rem', textAlign: 'justify' as const, marginBottom: '40px', opacity: 0.9 },
+    btnGroup: { display: 'flex', gap: '15px', flexWrap: 'wrap' as const },
+    // Nút Đọc Online 3D
+    readBtn: { 
+      backgroundColor: '#B08968', 
+      color: 'white', 
+      padding: '15px 35px', 
+      borderRadius: '4px', 
+      textDecoration: 'none', 
+      fontWeight: 'bold', 
+      fontSize: '1rem',
+      boxShadow: '0 5px 0 #8E6D50',
+      transition: '0.1s'
+    },
+    // Nút Tải File
+    downloadBtn: { 
+      border: '2px solid #4A3F35', 
+      color: '#4A3F35', 
+      padding: '13px 30px', 
+      borderRadius: '4px', 
+      textDecoration: 'none', 
+      fontWeight: 'bold',
+      fontSize: '1rem'
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-[#F5EFE6] text-[#4A3F35] font-serif p-6 md:p-12">
-      <div className="max-w-5xl mx-auto">
-        <button 
-          onClick={() => router.back()} 
-          className="mb-10 text-[#B08968] hover:translate-x-[-5px] transition-transform flex items-center gap-2 font-bold"
-        >
-          ← Quay lại kệ sách
+    <div style={styles.container}>
+      <div style={styles.contentWrapper}>
+        <button onClick={() => router.back()} style={styles.backBtn}>
+          ← QUAY LẠI KỆ SÁCH
         </button>
-        
-        <div className="grid md:grid-cols-[350px_1fr] gap-12 items-start bg-white/50 p-8 rounded-lg shadow-inner border border-[#E8DFD0]">
-          <div className="shadow-2xl">
-            <img 
-              src={book.cover_url} 
-              alt={book.title} 
-              className="w-full h-auto rounded-sm border-4 border-white" 
-            />
+
+        <div style={styles.mainBox}>
+          <div>
+            <img src={book.cover_url} alt={book.title} style={styles.coverImg} />
           </div>
-          
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-2">{book.title}</h1>
-              <p className="text-xl italic text-[#B08968]">Tác giả: {book.author}</p>
-            </div>
+
+          <div>
+            <h1 style={styles.title}>{book.title}</h1>
+            <p style={styles.author}>{book.author}</p>
             
-            <div className="h-px bg-[#B08968]/20 w-full"></div>
+            <div style={styles.divider}></div>
             
-            <div className="text-lg leading-relaxed text-justify opacity-90">
-              {book.description || "Cuốn sách này hiện chưa có lời tựa, nhưng chắc chắn là một hành trình thú vị đang chờ bạn khám phá."}
+            <div style={styles.desc}>
+              {book.description || "Cuốn sách này hiện chưa có lời tựa, nhưng chắc chắn là một hành trình thú vị đang chờ bạn khám phá tại Mokamocha."}
             </div>
 
-            <div className="pt-6 flex flex-wrap gap-4">
-              <a 
-                href={book.epub_url} 
-                className="bg-[#4A3F35] text-[#F5EFE6] px-8 py-3 rounded-sm hover:bg-[#2D2620] transition-colors shadow-lg font-bold"
+            <div style={styles.btnGroup}>
+              <Link 
+                href={`/reader/${book.id}`} 
+                style={styles.readBtn}
+                onMouseDown={(e) => {
+                  e.currentTarget.style.transform = 'translateY(4px)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 5px 0 #8E6D50';
+                }}
               >
-                Tải file EPUB
+                ĐỌC ONLINE NGAY
+              </Link>
+
+              <a href={book.epub_url} style={styles.downloadBtn} target="_blank">
+                TẢI FILE EPUB
               </a>
-              <button className="border border-[#4A3F35] px-8 py-3 rounded-sm hover:bg-[#4A3F35] hover:text-white transition-all font-bold opacity-50 cursor-not-allowed">
-                Đọc Online (Sắp ra mắt)
-              </button>
             </div>
           </div>
         </div>
